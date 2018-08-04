@@ -1,5 +1,0 @@
-File includes homeworks for the course Machine Learning and Artificial Intelligence in Finance:
-1. Company credit rating prediction (Methods: regression with regularization; naive bayes, logistic and LDA);
-2. Stock return prediction (Method: neural network based on keras framework).
-
-Programming Language: Python
