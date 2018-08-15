@@ -18,4 +18,12 @@ This assignment is to predict corporate events using financial variables. Credit
 
 There are 22 level ratings from D to AAA.
 
-The credit rating has been converted to values following prior studies. This dataset contains a number of financial variables based on financial reports. The data is from Compustat.
+The credit rating has been converted to values following prior studies. This dataset contains a number of financial variables based on financial reports. The data is from Compustat.  
+
+key variables:
+
+Var|Definition
+---|---
+ratescore|rating score in year t
+ratescore_1|rating score in year t+1
+rating_1 | rating in year t+1
