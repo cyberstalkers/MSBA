@@ -6,6 +6,9 @@ This business analytics projects uses real-world data and allows students to per
 Due to the confidentiality agreement, specific data of the project cannot be disclosed.  
 Some general tools designed for data processing and model framework are shared here.
 
+**Programming Language**  
+Python & R  
+
 **Content**  
 *Optimization_Model.Rmd* : Framework for solving convex optimization based on the package Rdonlp2. Although all the parameters are faked here, it can be applied to optimization problems with multiple situations, by replacing the original independent variables and constraints with yours.
 
