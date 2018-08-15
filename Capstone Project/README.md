@@ -10,7 +10,7 @@ Some general tools designed for data processing and model framework are shared h
 Python & R  
 
 **Content**  
-*Optimization_Model.Rmd* : Framework for solving convex optimization based on the package Rdonlp2. Although all the parameters are faked here, it can be applied to optimization problems with multiple situations, by replacing the original independent variables and constraints with yours.
+*Optimization_Model.Rmd* : Framework for solving convex optimization based on the package Rdonlp2. Although all the parameters are faked here, it can be applied to optimization problems with multiple situations, by replacing the original independent variables,constraints and model with yours.
 
 *Additional_temperature_API.py*: A program to obtain historical temperature data through a free API called [Nowapi](https://www.nowapi.com/api/weather.history). Note that data extraction only allows 200 times/h.  
 
