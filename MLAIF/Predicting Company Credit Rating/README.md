@@ -10,7 +10,7 @@ Regression: LASSO, Ridge and ElasticNet
 Classification: Logistic Regression, LDA and Naive Bayes  
 
 **Programing language**  
-R/Python  
+Python  
 
 
 **Dataset Introduction**  
