@@ -1,0 +1,114 @@
+---
+title: "Optimization Model"
+author: "MSBA 8"
+date: "10/07/2018"
+output: html_document
+---
+## 1. Optimization Model
+```{r}
+single_capacity = 0 # Due to confidentiality agreement, specific parameters cannot be shared.
+opt <- function(temp, building_demand, PL_row=0){
+  # Arguments:
+  # temp(float): an independent variable
+  # building_demand(float): a constraint value
+  # PL_row(data.frame): single record of original part loads. Default as 0 (not activated).
+  temp = temp; building_demand = building_demand
+  a0=c(0, 0, 0, 0) # a1, b1, b2, b3. Due to confidentiality agreement, specific parameters cannot be shared.
+  c1=c(0, 0, 0, 0)
+  c2=c(0, 0, 0, 0)
+  bc=c(0, 0, 0, 0)
+
+  # Objective
+  fn = function(pl){
+    f = 0; energy_i = 0
+    for (i in 1:4){
+      if (pl[i] != 0){
+        energy_i =a0[i]+ c1[i]*pl[i]+ c2[i]*(pl[i]**2)+bc[i]*(temp*pl[i]**2) # descriptive model for example
+        f = f + energy_i
+      }
+      else{
+        energy_i = energy_i + 0
+      }
+  }
+    return(f)
+  }
+  
+  # Lower & Upper bound
+  par.l = c(0,0,0,0); par.u = c(1,1,1,1)
+  
+  # Nonlinear constraint
+  cons = function(pl){
+    (pl[1]+pl[2]+pl[3]+pl[4])*single_capacity-building_demand
+  }
+  
+  nlin.l = c(0); nlin.u = c(+Inf)
+  
+  # result
+  p = c(0, 0, 0, 0)
+  #p = c(1, 1, 1, 1)
+  #p = c(0.2, 0.7, 0.7, 0.7)
+  result = donlp2(par = p, fn = fn, par.upper = par.u, par.lower = par.l,
+               nlin = list(cons), 
+               nlin.upper = nlin.u, nlin.lower = nlin.l)
+  
+  cat("\nPart load for each chiller =", result$par)
+  cat("\nProblem solved with objective =", result$fx)
+  cat("\nTotal cooling load =", sum(result$par)*single_capacity)
+  
+  refit_energy <- 0; energy_j <-0
+  if (length(PL_row)==4){
+    for (j in 1:4){
+      if (PL_row[,j]==0){
+        refit_energy = refit_energy + 0
+      }
+      else{
+        energy_j <- a0[j]+ c1[j]*PL_row[,j]+ c2[j]*(PL_row[,j]**2)+bc[j]*(temp*PL_row[,j])
+        refit_energy <- refit_energy + energy_j
+      }
+    }
+  }
+  
+
+  df <- data.frame(Model_energy_consum=refit_energy, Optimized_energy_consum=result$fx, Optimized_total_load=sum(result$par)*single_capacity, Opt_PL_A1=result$par[1], Opt_PL_B1=result$par[2], Opt_PL_B2=result$par[3], Opt_PL_B3=result$par[4])
+  return(df)
+}
+```
+
+
+## 2. For loop and write csv
+for loop through the whole dataset.
+
+```{r}
+# for loop function
+opt_df <- function(temp_lst, building_demand_lst, original_PL){
+  #lst_pair <- list(temp_lst, building_demand_lst)
+  big_res <- data.frame()
+  for (i in 1:length(temp_lst)){
+    PL_row <- original_PL[i,]
+    mini_res <- opt(unlist(temp_lst[i]), unlist(building_demand_lst[i]),PL_row=PL_row) # select opt model here
+    big_res <- rbind(big_res, mini_res)
+  }
+  return(big_res)
+}
+```
+
+
+```{r}
+# read in data
+original <- read.csv("~/sample_data.csv",sep = "\t")
+temp_list <- original$Temp_Hos
+building_demand_list <- original$Total_CoolingLoad
+original_PL <- data.frame(original$A1, original$B1, original$B2, original$B3)
+```
+
+```{r}
+# optimizing
+library(Rdonlp2)
+opt_res <- opt_df(temp_list, building_demand_list, original_PL)
+```
+
+```{r}
+# concat
+combined_df <- cbind(original, opt_res)
+write.csv(combined_df, "~/optimized_data.csv")
+```
