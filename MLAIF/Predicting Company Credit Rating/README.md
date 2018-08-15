@@ -2,7 +2,6 @@ Predicting Company Credit Rating
 ---
 
 **Objective**   
-Predicting Company Credit Rating  
 This assignment is to predict corporate events using financial variables. Credit rating is a heated area in finance literature (see Hull et al. 2004; Avramov 2007). The application of machine learning in predicting credit rating is also popular in industry (e.g. Huang et al. 2004; Lee 2007; Khandani et al. 2010).  
 
 **Methods**  
