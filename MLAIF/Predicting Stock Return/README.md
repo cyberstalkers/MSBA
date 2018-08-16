@@ -24,9 +24,9 @@ Var|Definition
 ---|---
 DATETIME|Time: by minutes
 open|Open price
-high|high price
-low|low price
-close|close price
+high|High price
+low|Low price
+close|Close price
 volume|Volume
 amount|Transaction amount
 
