@@ -1,0 +1,134 @@
+---
+title: 'MSBA7011: Assignment 4'
+author: "Qiong"
+date: "16/12/2017"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Q1 Carseats, ISLR
+
+In the lab, a classification tree was applied to the Carseats data set after converting Sales into a qualitative response variable. Now we will seek to predict Sales using regression trees and related approaches, treating the response as a quantitative variable.
+
+### (a)  Split the data set into a training set and a test set.
+```{r}
+library(tree)
+library(ISLR)
+attach(Carseats)
+set.seed(1)
+
+train<-sample(1:nrow(Carseats), 200)  # 200 for training and 200 for prediction
+Carseats.train=Carseats[train,]
+Carseats.test=Carseats[-train,]
+```
+
+### (b) Fit a regression tree to the training set. 
+```{r}
+# Fit a regression tree to the training set
+tree.carseats=tree(Sales~.,Carseats.train)
+summary(tree.carseats)
+
+# Plot the tree, and interpret the results
+plot(tree.carseats)
+text(tree.carseats)
+```
+The result indicates that sales could be divided into a 17 terminal nodes tree, according to the variables given in formula. We can view each node clearly. Since each split maximizes the reduction in impurity, ShelveLoc and Price may be the most important factors that influence sales.
+
+```{r}
+# Since it is a regression instead of classification problem, we prefer to use MSE to measure test error rate.
+y_pred <- predict(tree.carseats, Carseats.test)
+MSE <- mean((y_pred - Carseats.test$Sales)^2)
+MSE
+```
+
+### (c) Use cross-validation in order to determine the optimal level of tree complexity.
+```{r}
+set.seed(20)
+# Cross-validation
+cv.carseats <- cv.tree(tree.carseats, FUN=prune.tree)
+names(cv.carseats)
+
+plot(cv.carseats$size, cv.carseats$dev, type = "b")
+tree.opt <- which.min(cv.carseats$dev)
+points(tree.opt, cv.carseats$dev[tree.opt], col = "red")
+```
+Therefore, tree size 10 is selected.
+
+```{r}
+prune.carseats <- prune.tree(tree.carseats, best=10)
+plot(prune.carseats)
+text(prune.carseats)
+```
+
+```{r}
+# Recalculate the MSE
+y_pred2 <- predict(prune.carseats, Carseats.test)
+MSE2 <- mean((y_pred2 - Carseats.test$Sales)^2)
+MSE2
+```
+
+Since the MSE increases from 4.148897 to 4.819708, pruning the tree does improve the test error rate.
+
+### (d) Use the bagging approach in order to analyze this data.
+```{r}
+# Use the bagging approach in order to analyze this data.
+library(randomForest)
+set.seed(30)
+bag.carseats=randomForest(Sales~.,data=Carseats.train,mtry=10,importance=TRUE)
+
+# What test error rate do you obtain?
+y_pred3 <- predict(bag.carseats, Carseats.test)
+MSE3 <- mean((y_pred3 - Carseats.test$Sales)^2)
+MSE3
+```
+The MSE decreases greatly.
+
+```{r}
+# Use the importance() function to determine which variables are most important.
+importance(bag.carseats)
+```
+IncNodePurity is the total decrease in node impurities from splitting on the variable, averaged over all trees. For regression, it is measured by residual sum of squares. So we can conclude that Price and ShelveLoc are the 2 most important variables.
+
+### (e) Use random forests to analyze this data. 
+```{r}
+# Use random forests to analyze this data. Let predictors = root(10) = 3 here.
+set.seed(50)
+rf.carseats=randomForest(Sales~.,data=Carseats.train,mtry=3,importance=TRUE)
+
+# What test error rate do you obtain?
+y_pred4 <- predict(rf.carseats, Carseats.test)
+MSE4 <- mean((y_pred4 - Carseats.test$Sales)^2)
+MSE4
+```
+
+```{r}
+# Use the importance() function to determine which variables are most important.
+importance(rf.carseats)
+```
+Still, Price and ShelveLoc are the 2 most important variables.
+
+## Q2 Caravan, ISLR
+
+### (a) Create a training set consisting of the first 1,000 observations, and a test set consisting of the remaining observations.
+```{r}
+set.seed(60)
+train <- 1:1000
+Caravan$Purchase <- as.numeric(Caravan$Purchase=='Yes')
+van.train <- Caravan[train,]
+van.test <- Caravan[-train,]
+```
+
+### (b) Fit a boosting model to the training set with Purchase as the response and the other variables as predictors. 
+
+```{r}
+# Fit a boosting model
+library(gbm)
+set.seed(70)
+boost.van <- gbm(Purchase~., data=van.train, distribution='gaussian', n.trees=1000, shrinkage=0.01)
+summary(boost.van)
+```
+
+From figure 2 above, we find variables 'PPERSAUT', 'MKOOPKLA' and MOPLHOOG appear to be the most important.
