@@ -8,7 +8,7 @@ Managing and Mining Big Data
 5. Reinforcement Learning  
 6. Ensemble Learning  
 
-**Programming**
+**Programming**  
 R, Python(Tensorflow/Keras)  
 some Spark and Hadoop.
 
@@ -18,4 +18,4 @@ some Spark and Hadoop.
 3. Application of clustering method and LSTM.
 4. Application of decision tree ensembles(bagging, boosting, etc).  
 
-*Due to confidentiality, specific exercise questions are not shared here.*
+*Due to confidentiality, specific exercise questions are not shared.*
